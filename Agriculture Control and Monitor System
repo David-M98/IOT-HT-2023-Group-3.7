@@ -6,6 +6,8 @@
 
 #define MOISTURE_VALUE V0 
 #define WATER_PUMP V1 
+#define AUTO_MODE_PIN V2 
+#define PLANT_TYPE_PIN V3 
 
 #define MoistureSensor A0
 #define waterPump D3
@@ -16,6 +18,12 @@ char wifi_Password[] = "xxx" ;
 
 BlynkTimer timer; 
 bool relayModule = 0;
+
+int plantType = 0; 
+bool automaticMode = false; 
+
+const int vegetableMoistureThreshold = 41;
+const int nonVegetableMoistureThreshold = 21;
 
 void setup() {
   Serial.begin(9600); 
@@ -42,6 +50,14 @@ void readMoistureSensor() {
 
 BLYNK_CONNECTED() {
   Blynk.syncAll(); 
+}
+
+BLYNK_WRITE(AUTO_MODE_PIN) {
+  automaticMode = param.asInt(); 
+}
+
+BLYNK_WRITE(PLANT_TYPE_PIN) {
+  plantType = param.asInt(); 
 }
 
 BLYNK_WRITE(WATER_PUMP) {
