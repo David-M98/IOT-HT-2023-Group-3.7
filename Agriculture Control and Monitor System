@@ -26,11 +26,24 @@ void setup() {
   timer.setInterval(10L, readMoistureSensor); 
 }
 
+void loop() {
+  timer.run();
+  Blynk.run();
+}
+
+void readMoistureSensor() {
+  int moistureValue = analogRead(MoistureSensor);
+  moistureValue = map(moistureValue, 0, 1024, 0, 100); 
+  moistureValue = (moistureValue - 100) * -1; 
+
+  Blynk.virtualWrite(MOISTURE_VALUE, moistureValue); 
+  controlPump(moistureValue);
+  }
+
 BLYNK_CONNECTED() {
   Blynk.syncAll(); 
 }
 
-// Function to receive manual button value from Blynk
 BLYNK_WRITE(WATER_PUMP) {
   relayModule = param.asInt(); 
 
