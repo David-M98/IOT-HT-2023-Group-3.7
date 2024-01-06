@@ -1,1 +1,18 @@
+#define BLYNK_PRINT Serial 
+#define BLYNK_TEMPLATE_ID "TMPL4Xa9c0fB0" 
+#define BLYNK_TEMPLATE_NAME "Smart acriculture system" 
+#include <BlynkSimpleEsp8266.h> 
+#include <ESP8266WiFi.h> 
 
+#define MOISTURE_VALUE V0 
+#define WATER_PUMP V1 
+
+#define MoistureSensor A0
+#define waterPump D3
+
+char authentication[] = "yiaqLErX3dx3dzNj91D_5jQnhUC5W5JY"; 
+char wifi_Name[] = "xxx"; 
+char wifi_Password[] = "xxx" ; 
+
+BlynkTimer timer; 
+bool relayModule = 0;
