@@ -69,3 +69,21 @@ BLYNK_WRITE(WATER_PUMP) {
     digitalWrite(WaterPump, HIGH); 
   }
 }
+
+void controlPump(int moisture) {
+  if (automaticMode) { 
+    if (plantType == 0) { 
+      if (moisture < vegetableMoistureThreshold) { 
+        digitalWrite(WaterPump, LOW); 
+      } else if (moisture >= 80) { 
+        digitalWrite(WaterPump, HIGH); 
+      }
+    } else if (plantType == 1) { 
+      if (moisture < nonVegetableMoistureThreshold) { 
+        digitalWrite(WaterPump, LOW); 
+      } else if (moisture >= 40) { 
+        digitalWrite(WaterPump, HIGH); 
+      }
+    }
+  }
+}
