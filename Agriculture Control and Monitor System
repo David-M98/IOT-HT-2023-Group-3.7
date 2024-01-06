@@ -16,3 +16,27 @@ char wifi_Password[] = "xxx" ;
 
 BlynkTimer timer; 
 bool relayModule = 0;
+
+void setup() {
+  Serial.begin(9600); 
+  pinMode(WaterPump, OUTPUT); 
+  digitalWrite(WaterPump, HIGH); 
+
+  Blynk.begin(authentication, wifi_Name, wifi_Password, "blynk.cloud", 80); 
+  timer.setInterval(10L, readMoistureSensor); 
+}
+
+BLYNK_CONNECTED() {
+  Blynk.syncAll(); 
+}
+
+// Function to receive manual button value from Blynk
+BLYNK_WRITE(WATER_PUMP) {
+  relayModule = param.asInt(); 
+
+  if (relayModule == 1) {
+    digitalWrite(WaterPump, LOW); 
+  } else {
+    digitalWrite(WaterPump, HIGH); 
+  }
+}
