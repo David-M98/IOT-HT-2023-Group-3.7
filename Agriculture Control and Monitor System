@@ -13,7 +13,7 @@
 
 // Define component pins on our board
 #define MoistureSensor A0
-#define waterPump D3
+#define WaterPump D3
 
 // Define these to connect our application to our device
 // Used for our device to be connected to Wi- Fi
