@@ -8,8 +8,8 @@
 // Virtual pins definitions
 #define MOISTURE_VALUE V0 // For reading the moisture value
 #define WATER_PUMP V1  // For controlling the water pump
-#define AUTO_MODE_PIN V2 
-#define PLANT_TYPE_PIN V3  
+#define AUTO_MODE_PIN V2 // For toggling between automatic or manual mode
+#define PLANT_TYPE_PIN V3 // For selecting the plant type
 
 // Define component pins on our board
 #define MoistureSensor A0
@@ -24,19 +24,22 @@ char wifi_Password[] = "xxx" ; // Wi - Fi password
 BlynkTimer timer; // Allows us to perform the tasks at predetermined intervals. Ex: update the moisture value every 10 miliseconds.
 bool relayModule = 0; // Variable to store the relay state
 
-int plantType = 0; 
-bool automaticMode = false; 
+// Plant type and Automatic Mode Variables
+int plantType = 0; // 0 for Vegetable, 1 for Non- Vegetable
+bool automaticMode = false; // Variable to store automatic mode status
 
+// Lower thresholds for moisture value
 const int vegetableMoistureThreshold = 41;
 const int nonVegetableMoistureThreshold = 21;
 
+// Setup function
 void setup() {
-  Serial.begin(9600); 
-  pinMode(WaterPump, OUTPUT); 
-  digitalWrite(WaterPump, HIGH); 
+  Serial.begin(9600); // Starts serial communication
+  pinMode(WaterPump, OUTPUT); // Sets the water pump pin as ouput
+  digitalWrite(WaterPump, HIGH); // Initially turns off the water pump
 
-  Blynk.begin(authentication, wifi_Name, wifi_Password, "blynk.cloud", 80); 
-  timer.setInterval(10L, readMoistureSensor); 
+  Blynk.begin(authentication, wifi_Name, wifi_Password, "blynk.cloud", 80); // Connects to the blynk server
+  timer.setInterval(10L, readMoistureSensor); // Used to periodically call functions. In our code, it is set to call the ‘soilMoistureSensor()’ function every 100 milliseconds, ensuring real- time data monitoring.
 }
 
 // Main loop function
@@ -58,24 +61,26 @@ void readMoistureSensor() {
   }
 
 BLYNK_CONNECTED() {
-  Blynk.syncAll(); 
+  Blynk.syncAll(); // Synchronizes all states from the server
 }
 
 BLYNK_WRITE(AUTO_MODE_PIN) {
-  automaticMode = param.asInt(); 
+  automaticMode = param.asInt(); // Assigns the incoming value from the application to 'automaticMode'
 }
 
+// Function to receive plant type from Blynk
 BLYNK_WRITE(PLANT_TYPE_PIN) {
-  plantType = param.asInt(); 
+  plantType = param.asInt(); // Assigns the incoming value from the application to 'plantType'
 }
 
+// Function to receive manual button value from Blynk
 BLYNK_WRITE(WATER_PUMP) {
-  relayModule = param.asInt(); 
+  relayModule = param.asInt(); // Assigns the incoming value to 'relayModule'
 
   if (relayModule == 1) {
-    digitalWrite(WaterPump, LOW); 
+    digitalWrite(WaterPump, LOW); // Turns on the water pump
   } else {
-    digitalWrite(WaterPump, HIGH); 
+    digitalWrite(WaterPump, HIGH); // Turns off the water pump
   }
 }
 
