@@ -1,23 +1,28 @@
-#define BLYNK_PRINT Serial 
-#define BLYNK_TEMPLATE_ID "TMPL4Xa9c0fB0" 
-#define BLYNK_TEMPLATE_NAME "Smart acriculture system" 
-#include <BlynkSimpleEsp8266.h> 
-#include <ESP8266WiFi.h> 
+// Libraries and definitions
+#define BLYNK_PRINT Serial // For debugging purposes. Not needed in final code.
+#define BLYNK_TEMPLATE_ID "TMPL4Xa9c0fB0" // Our Blynk Template ID
+#define BLYNK_TEMPLATE_NAME "Smart acriculture system" // Name of the Blynk template that we created
+#include <BlynkSimpleEsp8266.h> // Includes the Blynk ESP8266 library
+#include <ESP8266WiFi.h> // Includes the ESP8266 board library
 
-#define MOISTURE_VALUE V0 
-#define WATER_PUMP V1 
+// Virtual pins definitions
+#define MOISTURE_VALUE V0 // For reading the moisture value
+#define WATER_PUMP V1  // For controlling the water pump
 #define AUTO_MODE_PIN V2 
-#define PLANT_TYPE_PIN V3 
+#define PLANT_TYPE_PIN V3  
 
+// Define component pins on our board
 #define MoistureSensor A0
 #define waterPump D3
 
-char authentication[] = "yiaqLErX3dx3dzNj91D_5jQnhUC5W5JY"; 
-char wifi_Name[] = "xxx"; 
-char wifi_Password[] = "xxx" ; 
+// Define these to connect our application to our device
+// Used for our device to be connected to Wi- Fi
+char authentication[] = "yiaqLErX3dx3dzNj91D_5jQnhUC5W5JY"; // Blynk auth. token
+char wifi_Name[] = "xxx"; // Wi- Fi SSID
+char wifi_Password[] = "xxx" ; // Wi - Fi password
 
-BlynkTimer timer; 
-bool relayModule = 0;
+BlynkTimer timer; // Allows us to perform the tasks at predetermined intervals. Ex: update the moisture value every 10 miliseconds.
+bool relayModule = 0; // Variable to store the relay state
 
 int plantType = 0; 
 bool automaticMode = false; 
@@ -34,17 +39,21 @@ void setup() {
   timer.setInterval(10L, readMoistureSensor); 
 }
 
+// Main loop function
 void loop() {
-  timer.run();
-  Blynk.run();
+  timer.run(); // Starts the Blynk timer
+  Blynk.run(); // Runs the Blynk library
 }
 
+// Function to read soil moisture sensor data and map it to a range (0- 100)
 void readMoistureSensor() {
   int moistureValue = analogRead(MoistureSensor);
-  moistureValue = map(moistureValue, 0, 1024, 0, 100); 
-  moistureValue = (moistureValue - 100) * -1; 
+  moistureValue = map(moistureValue, 0, 1024, 0, 100); // Maps the soil moisture value to a range of 0- 100.
+  moistureValue = (moistureValue - 100) * -1; // Inverts the value so that a higher moisture content gives a higher value (normalization)
 
-  Blynk.virtualWrite(MOISTURE_VALUE, moistureValue); 
+  Blynk.virtualWrite(MOISTURE_VALUE, moistureValue); // Sends the value to Blynk
+
+  // Calls the controlPump function with the moistureValue as its argument
   controlPump(moistureValue);
   }
 
@@ -70,15 +79,16 @@ BLYNK_WRITE(WATER_PUMP) {
   }
 }
 
+// Reasoning tool. Function to control the water pump based on soil moisture value and plant type.
 void controlPump(int moisture) {
-  if (automaticMode) { 
-    if (plantType == 0) { 
+  if (automaticMode) { // Checks if the application is in automatic mode or not
+    if (plantType == 0) { // Checks if the plant type is a vegetable
       if (moisture < vegetableMoistureThreshold) { 
-        digitalWrite(WaterPump, LOW); 
+        digitalWrite(WaterPump, LOW); // Turn on the water pump
       } else if (moisture >= 80) { 
-        digitalWrite(WaterPump, HIGH); 
+        digitalWrite(WaterPump, HIGH); // Turn off the water pump
       }
-    } else if (plantType == 1) { 
+    } else if (plantType == 1) { // Checks if the plant type is non- vegetable
       if (moisture < nonVegetableMoistureThreshold) { 
         digitalWrite(WaterPump, LOW); 
       } else if (moisture >= 40) { 
